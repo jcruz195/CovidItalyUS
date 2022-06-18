@@ -1,0 +1,59 @@
+---
+title: "Untitled"
+output: pdf_document
+---
+
+Summary:
+
+This paper sets out to forecast future cases of the respiratory illness SARS-CoV2, which is a recent strain of coronavirus. It was discovered in 2019 and has since spread throughout the world. The paper is concerned with three things regarding the virus: confirmed cases, number of deaths related to covid and the number of recoveries from covid. The writers track this data in the United States and Italy. To analyze this data, the following time series models are used: the Holt model (which uses two smoothing models and an equation to create the final forecast), the ARIMA model (which uses the lag errors in the data to forecast future values), the TBATS model (which combines Fourier terms with a Box-Cox transformation) and the cubic smoothing spline model (which uses likelihood approach to estimate the smoothing parameter). The paper takes aforementioned data and splits it into four sections: April 2-8, April 9-15, April 16-22 and April 23-29, all taking place during 2020. The models made out of this data are then used to predict the cases for April 30-May 6 in both the US and Italy. While all the models more or less came to the same conclusions, the ARIMA model has the most consistency and lowest AIC for the Italian data. The paper does not conclude that any of the models are substantially better than each other.
+
+
+```{r setup, include=TRUE}
+library(forecast)
+library(readxl)
+library(stats)
+setwd("C:/Users/Josep/Downloads")
+US_Confirmed <- read_excel("C:/Users/Josep/Downloads/US_Confirmed.xlsx") #Data of confirmed cases in US from Jan 22nd-April 29th 2020
+USCtimeseries <- ts(US_Confirmed) #creates time series for US confirmed cases
+USCtbats <- tbats(USCtimeseries) #Creates TBATS model for USCtimeseries
+fc1 <- forecast(USCtbats,h=7) #forecasts values for USCtbats from April 30th-May 6th 2020
+plot(fc1) #plot of fc1
+
+Italy_Confirmed <- read_excel("C:/Users/Josep/Downloads/Italy_Confirmed.xlsx") #Data of confirmed cases in Italy from Jan 22nd-April 29th 2020
+ITCtimeseries <- ts(Italy_Confirmed) #creates time series for Italy confirmed cases
+ITCtbats <- tbats(ITCtimeseries) #creates TBATS model for ITCtimeseries
+fc2 <- forecast(ITCtbats,h=7) #forecasts values for ITCtbats from April 30th-May 6th 2020
+plot(fc2) #plot of fc2
+
+US_Deaths <- read_excel("C:/Users/Josep/Downloads/US_Deaths.xlsx") ##Data of deaths in US from Jan 22nd-April 29th 2020
+USDtimeseries <- ts(US_Deaths) #creates time series for US deaths
+USDtbats <- tbats(USDtimeseries) #creates TBATS model for UDStimeseries
+fc3 <- forecast(USDtbats,h=7) #forecasts values for USDtbats from April 30th-May 6th 2020
+plot(fc3) #plot of fc3
+
+Italy_Deaths <- read_excel("C:/Users/Josep/Downloads/Italy_Deaths.xlsx") #Data of deaths in Italy from Jan 22nd-April 29th 2020
+ITDtimeseries <- ts(Italy_Deaths) #creates time series for Italy deaths
+ITDtbats <- tbats(ITDtimeseries) #creates TBATS model for ITDtimeseries
+fc4 <- forecast(ITDtbats,h=7) #forecasts values for ITDtbats from April 30th-May 6th 2020
+plot(fc4) #plot of fc4
+
+US_Recovered <- read_excel("C:/Users/Josep/Downloads/US_Recovered.xlsx") #Data of recovered cases in US from Jan 22nd-April 29th 2020
+USRtimeseries <- ts(US_Recovered) #creates time series for US recoveries
+USRtbats <- tbats(USRtimeseries) #creates TBATS model for USRtimeseries
+fc5 <- forecast(USRtbats,h=7) #forecasts values for USRtbats from April 30th-May 6th 2020
+plot(fc5) #plot of fc5
+
+Italy_Recovered <- read_excel("C:/Users/Josep/Downloads/Italy_Recovered.xlsx") #Data of recovered cases in Italy from Jan 22nd-April 29th 2020
+ITRtimeseries <- ts(Italy_Recovered) #creates time series for Italy recoveries
+ITRtbats <- tbats(ITRtimeseries) #creates TBATS model for ITRtimeseries
+fc6 <- forecast(ITRtbats,h=7) #forecasts values for ITRtbats from April 30th-May 6th
+plot(fc6) #plot of fc6
+
+summary(fc1) #MAPE = 8.238283, MAE = 1364.755, AIC = 1409.835
+summary(fc2) #MAPE = Inf, MAE = 314.6381, AIC = 1664.029
+summary(fc3) #MAPE = Inf, MAE = 80.70239, AIC = 1459.657
+summary(fc4) #MAPE = Inf, MAE = 37.58093, AIC = 1277.551
+summary(fc5) #MAPE = Inf, MAE = 634.1993, AIC = 1941.83
+summary(fc6) #MAPE = Inf, MAE = 205.2838, AIC = 1605.929
+```
+I have made TBATS models for US confirmed,deaths and recoveries and for Italian confirmed, deaths and recoveries. For the US confirmed forecast, all but April 30th's actual value fell between the 80% prediction intervall and all of the actual values fell within the 95% interval. For the Italian confirmed forecast, all but April 30ths actual value fell between the 80% prediction interval and all of the actual values fell within the 95% prediction interval.For the US deaths data, April 30th's actual value falls within the 80% interval and May 1sts & May 2nds actual values fall within the 95% prediction interval, and none of the rest of the days actual values fall within either interval. For the Italian deats data, all of the actual values fall within the 80% prediction interval. For the US recovery data, none of the actual values fall within either prediction interval (curiously, there was a large increase in the values starting at April 30th). For the Italian recovery data, the actual values for May 3rd-May 5th  fall within the 80% prediction interval and none of the other actual values fall within either interval. Overall, it seems like the TBATS model is good at predicting the values for confirmed cases whereas it is bad at predicting the values for recovered cases. The TBATS is also much better at predicting deaths in Italy that it is in the US.
